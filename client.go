@@ -710,6 +710,10 @@ func (client *Client) CaptureError(err error, tags map[string]string, interfaces
 	cause := pkgErrors.Cause(err)
 
 	packet := NewPacketWithExtra(err.Error(), extra, append(append(interfaces, client.context.interfaces()...), NewException(cause, GetOrNewStacktrace(cause, 1, 3, client.includePaths)))...)
+	if tags != nil {
+		packet.Level = Severity(tags["level"])
+	}
+
 	eventID, _ := client.Capture(packet, tags)
 
 	return eventID
